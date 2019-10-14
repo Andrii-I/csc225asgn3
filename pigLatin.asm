@@ -1,6 +1,6 @@
 # Andrii Ieroshenko, assignment 3
+# Proper Pig Latin translator with check of if 1st letter is a vowel
 # List of vowels used: a, e, i, o, and u
-#  
 # Registers used: t0: pointer to memory location where next character to save/load is located 
 #                 t1: logistical use (to check if character is Enter key (0xa), if 1st letter is a vowel)
 #                 t2: logistical use (2nd register used to check if 1st letter is a vowel)
@@ -9,10 +9,12 @@
 # while True:
 #     word = []
 #     print("Please enter the word to be translated and press Enter: ")
-#     while ord(word[i]) != 4
+#     while ord(word[i]) != <enter> key
 #         word[i] = input()
-#         new_word = word
+#     
+#     new_word = word
 #
+#     if word[0] != <enter> key:
 #         if ord(word[0]) == lowercase vowel:
 #             new_word.append('way')
 #         else:
@@ -22,8 +24,6 @@
 #  
 #         print('English Word: ' + ''.join(word))
 #         print('Pig-Latin Word: ' + ''.join(new_word))
-#        
-# newline char is 10 / 0xa
 
 .text 
 
@@ -50,6 +50,11 @@ readchar:
     b readchar
 
 manipulate:
+# check if user entered empty word (1st char is <enter> key), print nothing (goto end) if yes
+    lbu t2, chars
+    addi t2, t2, -10
+    beqz t2, end
+
 # print output msg1 ("English Word: ") to the user
     li a7, 4 
     la a0, OutputMsg1
