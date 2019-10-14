@@ -1,7 +1,6 @@
 # Andrii Ieroshenko, assignment 3
-# List of vowels checked: a, e, i, o, and u
+# List of vowels used: a, e, i, o, and u
 #  
-# Only use t0-t6
 # Registers used: t0: pointer to memory location where next character to save/load is located 
 #                 t1: logistical use (to check if character is Enter key (0xa), if 1st letter is a vowel)
 #                 t2: logistical use (2nd register used to check if 1st letter is a vowel)
@@ -51,40 +50,6 @@ readchar:
     b readchar
 
 manipulate:
-# check if 1st letter of the word is wovel (a/e/i/o/u), goto appending "way" if yes (vowel label)
-    lbu t1, chars 
-    addi t2, t1, -97
-    beqz t2, vowel 
-    addi t2, t1, -101
-    beqz t2, vowel 
-    addi t2, t1, -105
-    beqz t2, vowel 
-    addi t2, t1, -111
-    beqz t2, vowel 
-    addi t2, t1, -117
-    beqz t2, vowel 
-
-# else start printing from second character until <enter> key symbol is found, then print 1st character, new line, and goto end
-#    la t0, chars
-#nonvowel_loop:
-#    addi t0, t0, 1
-#    lbu a0, (t0)
-#    addi t2, a0, -10
-#    beqz t2, nonvowel_loop_end
-#    li a7, 11 
-#    ecall
-#    b nonvowel_loop
-#nonvowel_loop_end:
-#    la a0, chars
-#    li a7, 11 
-#    ecall
-#    li a7, 11 
-#    li a0, 10
-#    ecall
-#    b end
-
-
-vowel:
 # print output msg1 ("English Word: ") to the user
     li a7, 4 
     la a0, OutputMsg1
@@ -111,7 +76,49 @@ original_word_end:
     li a7, 4 
     la a0, OutputMsg2
     ecall
-# print next character until <enter> key symbol is found, then print "way", new line, and goto end
+
+# check if 1st letter of the word is vowel (a/e/i/o/u), goto appending "way" if yes (vowel label)
+    lbu t1, chars 
+    addi t2, t1, -97
+    beqz t2, vowel 
+    addi t2, t1, -101
+    beqz t2, vowel 
+    addi t2, t1, -105
+    beqz t2, vowel 
+    addi t2, t1, -111
+    beqz t2, vowel 
+    addi t2, t1, -117
+    beqz t2, vowel 
+
+# else (1st letter is not a vowel) start printing from second character until <enter> key symbol is found, then print 1st character, "ay", new line, and goto end
+    la t0, chars
+novowel_loop:
+    addi t0, t0, 1
+    lbu t2, (t0)
+    addi t2, t2, -10
+    beqz t2, novowel_loop_end
+    
+    li a7, 11
+    lbu a0, (t0)
+    ecall
+    b novowel_loop
+novowel_loop_end:
+    li a7, 11
+    lbu a0, chars 
+    ecall
+
+    li a7, 4 
+    la a0, ay
+    ecall
+
+    li a7, 11 
+    li a0, 10
+    ecall
+    
+    b end
+
+vowel:
+# start with printing 1st character and print every next character until <enter> key symbol is found, then print "way", new line, and goto end
     la t0, chars
 vowel_loop:
     lbu t2, (t0)
@@ -120,17 +127,10 @@ vowel_loop:
     
     li a7, 11
     lbu a0, (t0)
-    addi t0, t0, 1 
     ecall
+    addi t0, t0, 1 
     b vowel_loop
-    
-#    addi t0, t0, 1
-#    lbu a0, (t0)
-#    addi t2, a0, -10
-#    beqz t2, vowel_loop_end
-#    li a7, 11 
-#    ecall
-#    b vowel_loop
+
 vowel_loop_end:
     li a7, 4 
     la a0, way
@@ -154,4 +154,5 @@ InputMsg: .string "Please enter the word to be translated and press Enter: "
 OutputMsg1: .string "English Word: "
 OutputMsg2: .string "Pig-Latin Word: "
 way: .string "way"
+ay: .string "ay"
 chars: .space 20
